@@ -1355,6 +1355,16 @@ def update_oos_bcs(in_geom_path,index,bc_dict,domain_geo, geo_out):
 #######################################################################################
 #combine the schematics for all GDB in the project area. potentially do this once? 
 def locate_string_gdb_to_concat_gdf(gdb_path_list,locater_string,coordinate_sys=None):
+    """Creates a geodataframe by searching through a list of geodatabases/geopackages for a specific layer name.
+
+    Args:
+        gdb_path_list (list): list of paths to geodatabases/geopackages
+        locater_string (string): string to identify layer name within geodatabases/geopackages
+        coordinate_sys (string, optional): EPSG, e.g. "4326". Defaults to None.
+
+    Returns:
+        Geodataframe: _description_
+    """
     gdb_quantity = len(gdb_path_list)
     
     if gdb_quantity == 0:
