@@ -17,20 +17,19 @@ home = pl.Path(os.getcwd())
 #user to set variables for the project.
 project = 'wy_fy23'  #project name, used to define input and output folders.
 model_prefix = 'wy_bh_' #This prefix is constant throughout each model in the project. Within the same project, the prefix should not be changing. 
-huc = '1008001203'  #HUC10 or model domain name for the model. This should be what is identified in the model file name. 
+huc = '1008001006'  #HUC10 or model domain name for the model. This should be what is identified in the model file name. 
 schematic_input_type = '*.gdb'  #file type for the schematic input, either .gdb for geodatabases or .gpkg for geopackages.
 
 ##############################################################
 ##############################################################
 
-
+force = True #deletes outputs from any prior runs. Set to False to avoid this.
 
 #define paths to input and output folders
 inputs = home/'inputs'
 outputs_base = home/'outputs'
 #place all draft hydraulic models into the models_folder within inputs. Ensure that model files are located directly within the model's folder
 models_folder = inputs/project/'hydraulic_models'
-force = True #deletes outputs from any prior runs. Set to False to avoid this.
 
 # Folder creation if not already present. Modifications not necessary but once this is imported, you can fill out folders with the necessary data.
 

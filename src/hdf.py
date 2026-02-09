@@ -870,7 +870,7 @@ def create_bc_from_junc(bc_connections,fid,fid_us,stage_data_ds,flow_data_ds,dss
     # #print(dss_matches_us[0])
     # if gradient_thresh < 0.75:
 
-    if rating_or_stage == "stage_hydrograph":
+    if rating_or_stage == "Stage Hydrograph":
         #assume ponding control and create stage hydrograph boundary condition instead
         #print warning if  the peak flow is close to the peak stage not controlling the peak stage. Assume 4 hours timestep difference at least.
         #if abs(max_stage_index - np.where(flows == flows.max())[0][0]) > 1:
@@ -983,7 +983,7 @@ def create_bc_from_junc(bc_connections,fid,fid_us,stage_data_ds,flow_data_ds,dss
             start=end
         return hg_name
     else:
-        assert rating_or_stage == "rating_curve", f"{rating_or_stage} was not expected. Should be rating_curve or stage_hydrograph"
+        assert rating_or_stage == "Rating Curve", f"{rating_or_stage} was not expected. Should be Rating Curve or Stage Hydrograph"
         #create new path name rating curve
         hg_parts = hg_all.split('/')
         hg_name = '/'.join([hg_parts[0],hg_parts[1],f'{hg_parts[2]}_rc','-','','',hg_parts[-2],hg_parts[-1]])
@@ -991,8 +991,10 @@ def create_bc_from_junc(bc_connections,fid,fid_us,stage_data_ds,flow_data_ds,dss
         
         #reset datapoints
         max_stage = stages_falling.max() #get max elevation
+        print('max stage is', max_stage)
         max_stage_index = np.where(stages_falling == stages_falling.max())[0][0]
         max_flow_c = flows_falling[max_stage_index] #get associated flow value
+        print('max flow associated with max stage is', max_flow_c)
         min_flow = flows_falling.min()
         rc_flow = [0]
         #use 30th percentile flow instead of using lowest stage to avoid bad low flow velocities
@@ -1017,12 +1019,20 @@ def create_bc_from_junc(bc_connections,fid,fid_us,stage_data_ds,flow_data_ds,dss
         #add max points + steeper last point for stability
         #stage
         rc_stage_tmp+=[max_stage-.5,max_stage,max_stage+1]
-        rc_stage = np.array([rc_stage_tmp],dtype=np.float32) #np.array([[min_stage,max_stage-0.5,max_stage,max_stage+0.5]],dtype=np.float32)
+        rc_stage = np.array([rc_stage_tmp],dtype=np.float32) #np.array([[min_stage,max_stage-0.5,max_stage,max_stage+1]],dtype=np.float32)
+
+        print(rc_stage)
 
         #flow
         rc_flow+=[max_flow_offset_l,max_flow_c,max_flow_offset_u]
+
+        print('initial rc flow',rc_flow)
+
         rc_flow_ratio = (event_us_flow_expected/max_flow_c)
         rc_flow = [item * rc_flow_ratio for item in rc_flow]
+
+        print('final rc flow',rc_flow)
+
         #save to dss
         pdc = PairedDataContainer()
         pdc.pathname = hg_name
