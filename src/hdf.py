@@ -292,7 +292,7 @@ def get_int_bc_lines(geom_file:pl.Path,inflow_huc:str):
 
 
 
-def write_updated_ext_bc_files(domain_geo,dss_files,ext_index,ext_bc_dict,int_index,int_bc_dict,int_r_index,int_r_bc_dict, src_index,src_bc_dict, inputs,outputs,project,huc,start_id,src_huc_hms,model_name_prefix,append=False, force=False):
+def write_updated_ext_bc_files(domain_geo,dss_files,ext_index,ext_bc_dict,int_index,int_bc_dict,int_r_index,int_r_bc_dict, src_index,src_bc_dict, inputs,outputs,project,huc,start_id,src_huc_hms,src_inc,model_name_prefix,append=False, force=False):
     #set variables
     bc_info = {}
     bc_info['in_plan_path']= ext_bc_dict['in_plan_path']
@@ -383,6 +383,13 @@ def write_updated_ext_bc_files(domain_geo,dss_files,ext_index,ext_bc_dict,int_in
             int_junc = int_bc_dict['junction'][i]
             #get relevant subbasins to re-write flow values
             int_sbs = j_connect_sub[int_junc]
+            ###########################WORK IN PROGRESS NEED TO REVIEW INCREMENTAL ADDITION OF SOURCES##################################
+            if int_junc in src_inc.values():
+                for k,v in src_inc.items():
+                    if v == int_junc:
+                        print('source identified for incremental flow addition at internal junction', k)
+                        int_sbs.append(k)
+            ############################################################################################################################
             # print('subbasin and junction',int_sbs,int_junc)
             #only add flow location information if there are contibuting subbasins
             # print('checking if internal junction has subbasins connected:',int_sbs)
