@@ -8,7 +8,6 @@ import shutil
 #set home directory - do not change
 home = pl.Path(os.getcwd())
 
-
 ##############################################################
 ################  USER DEFINED VARIABLES  ####################
 ########### ONLY CHANGE THESE ACCORDING TO PROJECT   #########
@@ -17,7 +16,7 @@ home = pl.Path(os.getcwd())
 #user to set variables for the project.
 project = 'wy_fy23'  #project name, used to define input and output folders.
 model_prefix = 'wy_bh_' #This prefix is constant throughout each model in the project. Within the same project, the prefix should not be changing. 
-huc = '1008001006'  #HUC10 or model domain name for the model. This should be what is identified in the model file name. 
+huc = '1008001303'  #HUC10 or model domain name for the model. This should be what is identified in the model file name. 
 schematic_input_type = '*.gdb'  #file type for the schematic input, either .gdb for geodatabases or .gpkg for geopackages.
 
 ##############################################################
