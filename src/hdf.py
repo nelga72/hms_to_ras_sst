@@ -662,7 +662,7 @@ def update_flow_file_stage(dss_name,dss_path,in_flow_path,outflow_huc,domain_nam
     with open(in_flow_path, "w") as f_o:
         f_o.write(flow_update_out)
 
-def create_bc_from_junc(bc_connections,fid,fid_us,stage_data_ds,flow_data_ds,dss_matches_us,rating_or_stage,event_us_flow_expected):
+def create_bc_from_junc(bc_connections,fid,fid_us,stage_data_ds,flow_data_ds,flow_data_us,rating_or_stage,event_us_flow_expected):
     """Writes a rating curve boundary condition to a dss file after reading information from a stage/flow hydrograph from a separate dss file.
     Parameters
     ----------
@@ -676,7 +676,7 @@ def create_bc_from_junc(bc_connections,fid,fid_us,stage_data_ds,flow_data_ds,dss
         a list of the stage data dss paths that will be read from for the downstream dss file
     flow_data_ds :
         a list of the flow data dss paths that will be read from for the downstream dss file
-    dss_matches_us :
+    flow_data_us :
         A list of dss matches from the upstream event dss (fid_us)
     rating_or_stage :
         A dictionary with the model names and their respective downstream boundary condition
@@ -876,7 +876,7 @@ def create_bc_from_junc(bc_connections,fid,fid_us,stage_data_ds,flow_data_ds,dss
     #         print(gradient_thresh)
     # #print(dss_matches_us[0])
     # if gradient_thresh < 0.75:
-
+############################################################################################
     if rating_or_stage == "Stage Hydrograph":
         #assume ponding control and create stage hydrograph boundary condition instead
         #print warning if  the peak flow is close to the peak stage not controlling the peak stage. Assume 4 hours timestep difference at least.
@@ -892,8 +892,8 @@ def create_bc_from_junc(bc_connections,fid,fid_us,stage_data_ds,flow_data_ds,dss
         #read temp data from us huc 
         diffs={}
         #get date differences  
-        for dss_match in dss_matches_us:
-            for compare in dss_matches_us:
+        for dss_match in flow_data_us:
+            for compare in flow_data_us:
                 for part in dss_match.split('/'):
                     if part not in compare.split('/'):
                         i = dss_match.split('/').index(part)
@@ -905,20 +905,21 @@ def create_bc_from_junc(bc_connections,fid,fid_us,stage_data_ds,flow_data_ds,dss
 
         #create new path name for ts adjusted data
         hg_name = hg_all[:hg_all.find('/STAGE/')]+'_stage_hyd'+hg_all[hg_all.find('/STAGE/'):]
-        
-        hg_all_us = dss_matches_us[0]
-        diff_us = [w for w in dss_matches_us[0].split('/') if w not in dss_matches_us[1].split('/')]
+        print("hg_name",hg_name)
+        hg_all_us = flow_data_us[0]
+        ################# part removed due to recurring error. 
+        diff_us = [w for w in flow_data_us[0].split('/') if w not in flow_data_us[1].split('/')]
         for part in diff_us:
             hg_name_us = hg_all_us.replace(part,'*')
         
         tsfu = fid_us.read_ts(hg_name_us)
         #print(tsfu.startDateTime)
         f = np.array(tsfu.values, dtype=float)
-        assert None not in f, f'there are Nones in {dss_matches_us[0]}'
+        assert None not in f, f'there are Nones in {flow_data_us}'
         f[f<0] = 0
         if f.size == 1:
             if np.isnan(f):
-                print(f'{dss_matches_us} does not have data')
+                print(f'{flow_data_us} does not have data')
                 
         #break into month chunks
         f_data = []
@@ -988,6 +989,8 @@ def create_bc_from_junc(bc_connections,fid,fid_us,stage_data_ds,flow_data_ds,dss
             fid_us.deletePathname(tsc.pathname)
             fid_us.put_ts(tsc)
             start=end
+            print(hg_name)
+            ###############################################################################
         return hg_name
     else:
         assert rating_or_stage == "Rating Curve", f"{rating_or_stage} was not expected. Should be Rating Curve or Stage Hydrograph"
